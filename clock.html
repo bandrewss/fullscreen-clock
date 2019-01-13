@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<!-- saved from url=(0082)https://www.nayuki.io/res/full-screen-clock-javascript/full-screen-clock-12hr.html -->
+<!--
+	Base code taken from: https://www.nayuki.io/page/full-screen-clock-javascript
+	Many thanks
+-->
 <html style="height: 100%; margin: 0px; padding: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 		<title>Clock</title>
@@ -15,7 +18,7 @@
 	</head>
 
 	<body style="display: flex; height: 100%; margin: 0px; padding: 0px; justify-content: center; align-items: center; background: rgb(23, 23, 23) !important;">
-		<span id="clocktext" style="font-kerning: none; font-size: 297.427pt;">11:38&nbsp;am</span>
+		<span id="clocktext" style="font-kerning: none; font-size: 120pt;">11:38</span>
 
 		<script type="text/javascript">
 			"use strict";
@@ -27,10 +30,18 @@
 			function updateClock() {
 				var d = new Date();
 				var s = "";
-				s += ((d.getHours() + 11) % 12 + 1) + ":";
-				s += (10 > d.getMinutes() ? "0" : "") + d.getMinutes() + "\u00A0";
-				//s += d.getHours() >= 12 ? "pm" : "am";
-				textElem.textContent = s;
+				var hour = ((d.getHours() + 11) % 12 + 1);
+
+				if(hour < 10) {
+					s += "&nbsp;" + hour;
+				} else {
+					s += hour;
+				}
+
+				s += ":";
+				s += (10 > d.getMinutes() ? "0" : "") + d.getMinutes();
+
+				textElem.innerHTML = s;
 				setTimeout(updateClock, 60000 - d.getTime() % 60000 + 100);
 			}
 
@@ -44,7 +55,9 @@
 			updateClock();
 			updateTextSize();
 			window.addEventListener("resize", updateTextSize);
+
 		</script>
 
 
-</body><link type="text/css" id="dma-temp-global-css" class="dmn-custom-append-data" rel="stylesheet" href="chrome-extension://bhbekkddpbpbibiknkcjamlkhoghieie/css/global-new.css"><link type="text/css" id="dma-universal-css" class="dmn-custom-append-data" rel="stylesheet" href="chrome-extension://bhbekkddpbpbibiknkcjamlkhoghieie/css/universal.css"></html>
+	</body>
+</html>
