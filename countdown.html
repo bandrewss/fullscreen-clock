@@ -1,39 +1,95 @@
 <!DOCTYPE html>
-<!-- saved from url=(0082)https://www.nayuki.io/res/full-screen-clock-javascript/full-screen-clock-12hr.html -->
+<!--
+	Base code taken from: https://www.nayuki.io/page/full-screen-clock-javascript
+	Many thanks
+-->
 <html style="height: 100%; margin: 0px; padding: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 		<title>Countdown</title>
 		<style type="text/css">
 			/* Customizable font and colors */
-			html {
+			html
+			{
 				background: #000000;
 				font-family: sans-serif;
 				font-weight: bold;
 				color: #FFFFFF;
 			}
+
+			body
+			{
+				display:flex;
+				flex-direction:column;
+				height:100%;
+				margin:0px;
+				padding:0px;
+				justify-content:center;
+				align-items:center;
+				background:rgb(23, 23, 23);
+			}
+
+			input
+			{
+				text-align:center;
+			}
+
+			#formWrapper
+			{
+				text-align:center;
+			}
+
+			#formWrapper.adjustButtons
+			{
+
+			}
+
+			#formButtons
+			{
+
+			}
 		</style>
 	</head>
 
-	<body style="display: flex; height: 100%; margin: 0px; padding: 0px; justify-content: center; align-items: center; background: rgb(23, 23, 23) !important;">
-
-		<div>
+	<body>
+		<div id="formWrapper">
 			<form id="timerForm" onsubmit="setTimer(); return false">
-				<input id="minute" type="text">
-				<input id="second" type="text">
-				<input id="submit" type="submit" value="Set Timer">
+				<button type="button" onclick="adjustButtons(this)" id="minuteMinus" class="adjustButton">-</button>
+				<input id="minute" type="text" size="4" value="10">
+				<button type="button" onclick="adjustButtons(this)" id="minutePlus" class="adjustButton">+</button>
+
+				<span>&nbsp;&nbsp;:&nbsp;&nbsp;</span>
+
+				<button type="button" onclick="adjustButtons(this)" id="secondMinus" class="adjustButton">-</button>
+				<input id="second" type="text" size="4" value="00">
+				<button type="button" onclick="adjustButtons(this)" id="secondPlus" class="adjustButton">+</button>
+
+				<br><br>
+
+				<div id="formButtons">
+					<input id="submit" type="submit" value="Set Timer">
+					<span>&nbsp;&nbsp;&nbsp;</span>
+					<button type="button" onclick="startTimer();">Start Timer</button>
+					<span>&nbsp;&nbsp;&nbsp;</span>
+					<button type="button" onclick="stopTimer();">Stop Timer</button>
+				</div>
 			</form>
 
-			<button onclick="startTimer();">Start Timer</button>
+
 		</div>
 
-		<div>
-			<span id="countMinutes" style="font-kerning: none; font-size: 250pt;">11</span>
-			<span id="colon" style="font-kerning: none; font-size: 250pt;">:</span>
-			<span id="countSeconds" style="font-kerning: none; font-size:250pt">15</span>
+		<div id="countdownWrapper" style="font-kerning:none; font-size:120pt">
+			<span id="countMinutes">10</span><span id="colon">:</span><span id="countSeconds">00</span>
 		</div>
 
 		<script type="text/javascript">
 			"use strict";
+
+			var textElem = document.getElementById("countdownWrapper");
+			var targetWidth = 0.9;  // Proportion of full screen width
+			var curFontSize = 20;  // Do not change
+
+			updateTextSize();
+			window.addEventListener("resize", updateTextSize);
 
 			var timerForm = document.getElementById("timerForm");
 			var countMinutes = document.getElementById("countMinutes");
@@ -42,14 +98,28 @@
 			var currentTime = 0;
 			var timerTime = 1;
 
-			var targetWidth = 0.9;  // Proportion of full screen width
-			var curFontSize = 20;  // Do not change
+			var timerRunning = false;
+
+			function updateTextSize() {
+				for (var i = 0; 3 > i; i++) {  // Iterate for better better convergence
+					curFontSize *= targetWidth / (textElem.offsetWidth / textElem.parentNode.offsetWidth);
+					textElem.style.fontSize = curFontSize + "pt";
+				}
+			}
 
 			function setTimer() {
-				console.log("AM HERE");
+				var minutes = parseInt(timerForm["minute"].value);
+				var seconds = parseInt(timerForm["second"].value);
 
-				var minutes = timerForm["minute"].value;
-				var seconds = timerForm["second"].value;
+				console.log(minutes);
+
+				if(minutes < 0 || minutes > 99 || isNaN(minutes)) {
+					minutes = 0;
+				}
+
+				if(seconds < 0 || seconds > 99 || isNaN(seconds)) {
+					seconds = 0;
+				}
 
 				setDisplay(minutes, seconds);
 
@@ -61,7 +131,7 @@
 				countSeconds.innerHTML = (sec < 10) ? "0" + sec : sec;
 			}
 
-			function updateTimer() {
+			function tickTimer() {
 				var numSeconds = parseInt(countSeconds.innerHTML);
 				var numMinutes = parseInt(countMinutes.innerHTML);
 
@@ -80,10 +150,15 @@
 				var d = new Date();
 				var done = false;
 
+				if( !timerRunning ) {
+					return;
+				}
+
+				// set currentTime to UNIX time
 				currentTime = Date.now() / 1000 | 0;
 
 				if(currentTime > timerTime) {
-					done = updateTimer();
+					done = tickTimer();
 					timerTime = currentTime;
 				}
 
@@ -96,10 +171,27 @@
 				var currentMilli = (Date.now() % 1000);
 				timerTime = Date.now() / 1000 | 0;
 
+				timerRunning = true;
+
 				setTimeout(timer(), 1500 - currentMilli)
 			}
 
+			function stopTimer() {
+				timerRunning = false;
+			}
+
+			function adjustButtons(button) {
+				if(button.id === "minutePlus") {
+					timerForm["minute"].value++;
+				} else if(button.id === "secondPlus") {
+					timerForm["second"].value++;
+				} else if(button.id === "minuteMinus" && timerForm["minute"].value > 0) {
+					timerForm["minute"].value--;
+				} else if(button.id === "secondMinus" && timerForm["second"].value > 0) {
+					timerForm["second"].value--;
+				}
+			}
 		</script>
 
-
-</body><link type="text/css" id="dma-temp-global-css" class="dmn-custom-append-data" rel="stylesheet" href="chrome-extension://bhbekkddpbpbibiknkcjamlkhoghieie/css/global-new.css"><link type="text/css" id="dma-universal-css" class="dmn-custom-append-data" rel="stylesheet" href="chrome-extension://bhbekkddpbpbibiknkcjamlkhoghieie/css/universal.css"></html>
+	</body>
+</html>
