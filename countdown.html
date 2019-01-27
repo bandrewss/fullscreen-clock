@@ -51,6 +51,11 @@
 	</head>
 
 	<body>
+
+		<div id="countdownWrapper" style="font-kerning:none; font-size:120pt">
+			<span id="countMinutes">10</span><span id="colon">:</span><span id="countSeconds">00</span>
+		</div>
+
 		<div id="formWrapper">
 			<form id="timerForm" onsubmit="setTimer(); return false">
 				<button type="button" onclick="adjustButtons(this)" id="minuteMinus" class="adjustButton">-</button>
@@ -75,10 +80,6 @@
 			</form>
 
 
-		</div>
-
-		<div id="countdownWrapper" style="font-kerning:none; font-size:120pt">
-			<span id="countMinutes">10</span><span id="colon">:</span><span id="countSeconds">00</span>
 		</div>
 
 		<script type="text/javascript">
