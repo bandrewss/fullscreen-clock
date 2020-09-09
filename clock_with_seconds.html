@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+	Base code taken from: https://www.nayuki.io/page/full-screen-clock-javascript
+	Many thanks
+-->
+<html style="height: 100%; margin: 0px; padding: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+		<title>Clock</title>
+		<style type="text/css">
+			/* Customizable font and colors */
+			html {
+				background: #000000;
+				font-family: sans-serif;
+				font-weight: bold;
+				color: #FFFFFF;
+			}
+		</style>
+	</head>
+
+	<body style="display: flex; height: 100%; margin: 0px; padding: 0px; justify-content: center; align-items: center; background: rgb(23, 23, 23) !important;">
+		<span id="clocktext" style="font-kerning: none; font-size: 120pt;">11:38</span>
+
+		<script type="text/javascript">
+			"use strict";
+
+			var textElem = document.getElementById("clocktext");
+			var targetWidth = 0.9;  // Proportion of full screen width
+			var curFontSize = 20;  // Do not change
+
+			function updateClock() {
+				var d = new Date();
+				var s = "";
+				var hour = ((d.getHours() + 11) % 12 + 1);
+
+				if(hour < 10) {
+					s += "&nbsp;" + hour;
+				} else {
+					s += hour;
+				}
+
+				s += ":";
+				s += (10 > d.getMinutes() ? "0" : "") + d.getMinutes();
+				s += ":"
+				s += (10 > d.getSeconds() ? "0" : "") + d.getSeconds();
+
+				textElem.innerHTML = s;
+				setTimeout(updateClock, 1000 - d.getTime() % 1000 + 20);
+			}
+
+			function updateTextSize() {
+				for (var i = 0; 3 > i; i++) {  // Iterate for better better convergence
+					curFontSize *= targetWidth / (textElem.offsetWidth / textElem.parentNode.offsetWidth);
+					textElem.style.fontSize = curFontSize + "pt";
+				}
+			}
+
+			updateClock();
+			updateTextSize();
+			window.addEventListener("resize", updateTextSize);
+
+		</script>
+
+
+	</body>
+</html>
