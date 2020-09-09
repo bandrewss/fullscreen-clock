@@ -6,6 +6,8 @@
 <html style="height: 100%; margin: 0px; padding: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 		<title>Countdown</title>
+		<link rel="icon" type="image/png" href="favicon.ico"/>
+
 		<style type="text/css">
 			/* Customizable font and colors */
 			html
@@ -101,6 +103,8 @@
 
 			var timerRunning = false;
 
+			set_favicon("⏲️");
+
 			function updateTextSize() {
 				for (var i = 0; 3 > i; i++) {  // Iterate for better better convergence
 					curFontSize *= targetWidth / (textElem.offsetWidth / textElem.parentNode.offsetWidth);
@@ -123,6 +127,7 @@
 				}
 
 				setDisplay(minutes, seconds);
+				set_favicon("⏲️");
 
 				return false;
 			}
@@ -170,6 +175,8 @@
 
 				if( !done ) {
 					setTimeout(timer, 1000 - (Date.now() % 1000));
+				} else {
+					set_favicon("🚨")
 				}
 			}
 
@@ -179,11 +186,15 @@
 
 				timerRunning = true;
 
+				set_favicon("⏲️");
+
 				setTimeout(timer(), 1500 - currentMilli)
 			}
 
 			function stopTimer() {
 				timerRunning = false;
+
+				set_favicon("⏲️");
 			}
 
 			function adjustButtons(button) {
@@ -196,6 +207,25 @@
 				} else if(button.id === "secondMinus" && timerForm["second"].value > 0) {
 					timerForm["second"].value--;
 				}
+			}
+
+			function set_favicon(emoji) {
+				// favicon as emoji taken from koddsson
+				// https://koddsson.com/posts/emoji-favicon/
+
+				const canvas = document.createElement('canvas');
+				canvas.height = 32;
+				canvas.width = 32;
+
+				const ctx = canvas.getContext('2d');
+				ctx.font = '28px serif';
+				ctx.fillText(emoji, -2, 24);
+
+				const favicon = document.querySelector('link[rel=icon]');
+				if (favicon) {
+					favicon.href = canvas.toDataURL();
+				}
+
 			}
 		</script>
 

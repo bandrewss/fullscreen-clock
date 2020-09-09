@@ -6,6 +6,8 @@
 <html style="height: 100%; margin: 0px; padding: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 		<title>Clock w/Seconds</title>
+		<link rel="icon" type="image/png" href="favicon.ico"/>
+
 		<style type="text/css">
 			/* Customizable font and colors */
 			html {
@@ -26,6 +28,7 @@
 			var textElem = document.getElementById("clocktext");
 			var targetWidth = 0.9;  // Proportion of full screen width
 			var curFontSize = 20;  // Do not change
+			var current_hour = 0;
 
 			function updateClock() {
 				var d = new Date();
@@ -51,6 +54,7 @@
 					document.title = s
 				}
 
+				set_favicon(hour);
 				setTimeout(updateClock, 1000 - d.getTime() % 1000 + 20);
 			}
 
@@ -61,6 +65,72 @@
 				}
 			}
 
+			function set_favicon(hour) {
+				// favicon as emoji taken from koddsson
+				// https://koddsson.com/posts/emoji-favicon/
+				if(hour == current_hour) {
+					return;
+				}
+
+				current_hour = hour;
+				var emoji = "🕰️";
+
+				switch(hour) {
+					case 1:
+						emoji = "🕐";
+						break;
+					case 2:
+						emoji = "🕑";
+						break;
+					case 3:
+						emoji = "🕒";
+						break;
+					case 4:
+						emoji = "🕓";
+						break;
+					case 5:
+						emoji = "🕔";
+						break;
+					case 6:
+						emoji = "🕕";
+						break;
+					case 7:
+						emoji = "🕖";
+						break;
+					case 8:
+						emoji = "🕗";
+						break;
+					case 9:
+						emoji = "🕘";
+						break;
+					case 10:
+						emoji = "🕙";
+						break;
+					case 11:
+						emoji = "🕚";
+						break;
+					case 12:
+						emoji = "🕛";
+						break;
+
+				}
+
+				const canvas = document.createElement('canvas');
+				canvas.height = 32;
+				canvas.width = 32;
+
+				const ctx = canvas.getContext('2d');
+				ctx.font = '28px serif';
+				ctx.fillText(emoji, -2, 24);
+
+				const favicon = document.querySelector('link[rel=icon]');
+				if (favicon) {
+					favicon.href = canvas.toDataURL();
+				}
+
+			}
+
+			set_favicon(-1);
 			updateClock();
 			updateTextSize();
 			window.addEventListener("resize", updateTextSize);
