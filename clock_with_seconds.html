@@ -5,7 +5,7 @@
 -->
 <html style="height: 100%; margin: 0px; padding: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-		<title>Clock</title>
+		<title>Clock w/Seconds</title>
 		<style type="text/css">
 			/* Customizable font and colors */
 			html {
@@ -44,6 +44,13 @@
 				s += (10 > d.getSeconds() ? "0" : "") + d.getSeconds();
 
 				textElem.innerHTML = s;
+
+				if (hour < 10) {
+					document.title = s.slice(6)
+				} else {
+					document.title = s
+				}
+
 				setTimeout(updateClock, 1000 - d.getTime() % 1000 + 20);
 			}
 

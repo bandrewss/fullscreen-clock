@@ -128,8 +128,13 @@
 			}
 
 			function setDisplay(min, sec) {
-				countMinutes.innerHTML = (min < 10) ? "0" + min : min;
-				countSeconds.innerHTML = (sec < 10) ? "0" + sec : sec;
+				var min_str = (min < 10) ? "0" + min : min;
+				var sec_str = (sec < 10) ? "0" + sec : sec;
+
+				countMinutes.innerHTML = min_str;
+				countSeconds.innerHTML = sec_str;
+
+				document.title = min_str + ":" + sec_str;
 			}
 
 			function tickTimer() {

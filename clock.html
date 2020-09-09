@@ -42,6 +42,13 @@
 				s += (10 > d.getMinutes() ? "0" : "") + d.getMinutes();
 
 				textElem.innerHTML = s;
+
+				if (hour < 10) {
+					document.title = s.slice(6)
+				} else {
+					document.title = s
+				}
+
 				setTimeout(updateClock, 60000 - d.getTime() % 60000 + 100);
 			}
 
