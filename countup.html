@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!--
+	Base code taken from: https://www.nayuki.io/page/full-screen-clock-javascript
+	Many thanks
+-->
+<html style="height: 100%; margin: 0px; padding: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<title>Countup</title>
+	<link rel="icon" type="image/png" href="favicon.ico"/>
+
+	<style type="text/css">
+			/* Customizable font and colors */
+			html
+			{
+				background: #000000;
+				font-family: sans-serif;
+				font-weight: bold;
+				color: #FFFFFF;
+			}
+
+			body
+			{
+				display:flex;
+				flex-direction:column;
+				height:100%;
+				margin:0px;
+				padding:0px;
+				justify-content:center;
+				align-items:center;
+				background:rgb(23, 23, 23);
+			}
+
+			input
+			{
+				text-align:center;
+			}
+
+			#formWrapper
+			{
+				text-align:center;
+			}
+
+			#formWrapper.adjustButtons
+			{
+
+			}
+
+			#formButtons
+			{
+
+			}
+
+			.hidden
+			{
+				display:none;
+			}
+		</style>
+</head>
+
+<body>
+
+<div id="countdownWrapper" style="font-kerning:none; font-size:120pt">
+	<span id="countHours">00</span><span>:</span><span id="countMinutes">00</span><span>:</span><span id="countSeconds">00</span>
+</div>
+
+<div id="formWrapper">
+	<form id="timerForm" onsubmit="setTimer(); return false">
+		<button type="button" onclick="adjustButtons(this)" id="hourMinus" class="adjustButton">-</button>
+		<input id="hour" type="text" size="4" value="00">
+		<button type="button" onclick="adjustButtons(this)" id="hourPlus" class="adjustButton">+</button>
+
+		<span>&nbsp;&nbsp;:&nbsp;&nbsp;</span>
+
+		<button type="button" onclick="adjustButtons(this)" id="minuteMinus" class="adjustButton">-</button>
+		<input id="minute" type="text" size="4" value="00">
+		<button type="button" onclick="adjustButtons(this)" id="minutePlus" class="adjustButton">+</button>
+
+		<span>&nbsp;&nbsp;:&nbsp;&nbsp;</span>
+
+		<button type="button" onclick="adjustButtons(this)" id="secondMinus" class="adjustButton">-</button>
+		<input id="second" type="text" size="4" value="00">
+		<button type="button" onclick="adjustButtons(this)" id="secondPlus" class="adjustButton">+</button>
+
+		<br><br>
+
+		<div id="formButtons">
+			<input id="submit" type="submit" value="Set Timer">
+			<span>&nbsp;&nbsp;&nbsp;</span>
+			<button type="button" onclick="startTimer();">Start Timer</button>
+		</div>
+	</form>
+
+</div>
+
+	<script type="text/javascript">
+			"use strict";
+
+			var textElem = document.getElementById("countdownWrapper");
+			var targetWidth = 0.9;  // Proportion of full screen width
+			var curFontSize = 20;  // Do not change
+
+			updateTextSize();
+			window.addEventListener("resize", updateTextSize);
+
+			var timerForm = document.getElementById("timerForm");
+			var countHours = document.getElementById("countHours");
+			var countMinutes = document.getElementById("countMinutes");
+			var countSeconds = document.getElementById("countSeconds");
+
+			var currentTime = 0;
+			var timerTime = 1;
+			var current_hour = -1;
+
+			var timerRunning = false;
+
+			set_favicon(0);
+
+			function updateTextSize() {
+				for (var i = 0; 3 > i; i++) {  // Iterate for better better convergence
+					curFontSize *= targetWidth / (textElem.offsetWidth / textElem.parentNode.offsetWidth);
+					textElem.style.fontSize = curFontSize + "pt";
+				}
+			}
+
+			function setDisplay(hour, min, sec) {
+				var hour_str = (hour < 10) ? "0" + hour : hour;
+				var min_str = (min < 10) ? "0" + min : min;
+				var sec_str = (sec < 10) ? "0" + sec : sec;
+
+				countHours.innerHTML = hour_str;
+				countMinutes.innerHTML = min_str;
+				countSeconds.innerHTML = sec_str;
+
+				document.title = hour_str + ":" + min_str + ":" + sec_str;
+			}
+
+			function tickTimer() {
+				var numSeconds = parseInt(countSeconds.innerHTML);
+				var numMinutes = parseInt(countMinutes.innerHTML);
+				var numHours = parseInt(countHours.innerHTML);
+
+				if( numSeconds === 59 ) {
+					numSeconds = 0;
+					numMinutes += 1;
+				} else {
+					numSeconds += 1;
+				}
+
+				if( numMinutes === 60 ) {
+					numMinutes = 0;
+					numHours += 1;
+				}
+
+				setDisplay(numHours, numMinutes, numSeconds);
+				set_favicon(numHours % 12);
+			}
+
+			function timer() {
+				var d = new Date();
+				var done = false;
+
+				if( !timerRunning ) {
+					return;
+				}
+
+				// set currentTime to UNIX time
+				currentTime = Date.now() / 1000 | 0;
+
+				if(currentTime > timerTime) {
+					tickTimer();
+					timerTime = currentTime;
+				}
+
+				// count up forever
+				setTimeout(timer, 250 - (Date.now() % 250));
+			}
+
+			function startTimer() {
+				var currentMilli = (Date.now() % 1000);
+				timerTime = Date.now() / 1000 | 0;
+
+				timerRunning = true;
+				timerForm.style.display = "none";
+
+				set_favicon(0);
+				setTimeout(timer(), 1500 - currentMilli)
+			}
+
+			function setTimer() {
+				var hours = parseInt(timerForm["hour"].value);
+				var minutes = parseInt(timerForm["minute"].value);
+				var seconds = parseInt(timerForm["second"].value);
+
+				if(hours < 0 || hours > 99 || isNaN(hours)) {
+					minutes = 0;
+				}
+
+				if(minutes < 0 || minutes > 99 || isNaN(minutes)) {
+					minutes = 0;
+				}
+
+				if(seconds < 0 || seconds > 99 || isNaN(seconds)) {
+					seconds = 0;
+				}
+
+				setDisplay(hours, minutes, seconds);
+				set_favicon(hours);
+
+				return false;
+			}
+
+			function adjustButtons(button) {
+				if(button.id === "hourPlus") {
+					timerForm["hour"].value++;
+				} else if(button.id === "minutePlus") {
+					timerForm["minute"].value++;
+				} else if(button.id === "secondPlus") {
+					timerForm["second"].value++;
+				} else if(button.id === "hourMinus" && timerForm["hour"].value > 0) {
+					timerForm["minute"].value--;
+				} else if(button.id === "minuteMinus" && timerForm["minute"].value > 0) {
+					timerForm["minute"].value--;
+				} else if(button.id === "secondMinus" && timerForm["second"].value > 0) {
+					timerForm["second"].value--;
+				}
+			}
+
+			function set_favicon(hour) {
+				// favicon as emoji taken from koddsson
+				// https://koddsson.com/posts/emoji-favicon/
+				if(hour == current_hour) {
+					return;
+				}
+
+				current_hour = hour;
+				var emoji = "🕰️";
+
+				switch(hour) {
+					case 0:
+						emoji = "🕛";
+						break;
+					case 1:
+						emoji = "🕐";
+						break;
+					case 2:
+						emoji = "🕑";
+						break;
+					case 3:
+						emoji = "🕒";
+						break;
+					case 4:
+						emoji = "🕓";
+						break;
+					case 5:
+						emoji = "🕔";
+						break;
+					case 6:
+						emoji = "🕕";
+						break;
+					case 7:
+						emoji = "🕖";
+						break;
+					case 8:
+						emoji = "🕗";
+						break;
+					case 9:
+						emoji = "🕘";
+						break;
+					case 10:
+						emoji = "🕙";
+						break;
+					case 11:
+						emoji = "🕚";
+						break;
+					case 12:
+						emoji = "🕛";
+						break;
+				}
+
+				const canvas = document.createElement('canvas');
+				canvas.height = 32;
+				canvas.width = 32;
+
+				const ctx = canvas.getContext('2d');
+				ctx.font = '28px serif';
+				ctx.fillText(emoji, -2, 24);
+
+				const favicon = document.querySelector('link[rel=icon]');
+				if (favicon) {
+					favicon.href = canvas.toDataURL();
+				}
+
+			}
+		</script>
+
+</body>
+</html>
